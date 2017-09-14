@@ -20,7 +20,7 @@ import (
 func Map(value string) *list.List {
 	// This function directly used from the documentation
 	// https://golang.org/pkg/strings/#FieldsFunc
-	wordFinder := func(c rune) bool {
+	var wordFinder = func(c rune) bool {
 		return !unicode.IsLetter(c) && !unicode.IsNumber(c)
 	}
 
