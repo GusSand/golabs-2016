@@ -11,6 +11,7 @@ import "net/rpc"
 import "net"
 import "bufio"
 import "hash/fnv"
+import "io/ioutil"
 
 // import "os/exec"
 
@@ -266,8 +267,7 @@ func DoReduce(job int, fileName string, nmap int,
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
-	p := MergeName(fileName, job)
-	file, err := os.Create(p)
+	file, err := ioutil.TempFile("", "mapreduce")
 	if err != nil {
 		log.Fatal("DoReduce: create ", err)
 	}
@@ -276,6 +276,9 @@ func DoReduce(job int, fileName string, nmap int,
 		res := Reduce(k, kvs[k])
 		enc.Encode(KeyValue{k, res})
 	}
+
+	// move temp file to final path
+	os.Rename(file.Name(), MergeName(fileName, job))
 	file.Close()
 }
 
