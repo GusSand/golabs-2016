@@ -46,7 +46,7 @@ func (mr *MapReduce) RunMaster() *list.List {
 
 	doTheJob := func(worker string, job *DoJobArgs) {
 		var response DoJobReply
-		ok := call(worker, "WorkerDoTheJob", job, &response)
+		ok := call(worker, "Worker.DoJob", job, &response)
 		if ok {
 			jobDone <- 1
 			idle <- worker
