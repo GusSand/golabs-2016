@@ -61,7 +61,7 @@ type MapReduce struct {
 	stats           *list.List
 
 	// Map of registered workers that you need to keep up to date
-	Workers map[string]*WorkerInfo
+	Workers 		map[string]*WorkerInfo
 
 	// add any additional state here
 }
@@ -78,6 +78,7 @@ func InitMapReduce(nmap int, nreduce int,
 	mr.DoneChannel = make(chan bool)
 
 	// initialize any additional state here
+	mr.Workers = make(map[string]*WorkerInfo)
 	return mr
 }
 
@@ -124,7 +125,7 @@ func (mr *MapReduce) StartRegistrationServer() {
 					conn.Close()
 				}()
 			} else {
-				DPrintf("RegistrationServer: accept error", err)
+				DPrintf("RegistrationServer: accept error %s", err)
 				break
 			}
 		}
@@ -150,6 +151,8 @@ func (mr *MapReduce) Split(fileName string) {
 		log.Fatal("Split: ", err)
 	}
 	size := fi.Size()
+	// Print the actual file size in bytes
+	fmt.Printf("Split read %v\n", size)
 	nchunk := size / int64(mr.nMap)
 	nchunk += 1
 
@@ -282,7 +285,7 @@ func DoReduce(job int, fileName string, nmap int,
 // Merge the results of the reduce jobs
 // XXX use merge sort
 func (mr *MapReduce) Merge() {
-	DPrintf("Merge phase")
+	fmt.Println("Merge phaseMerge:")
 	kvs := make(map[string]string)
 	for i := 0; i < mr.nReduce; i++ {
 		p := MergeName(mr.file, i)
